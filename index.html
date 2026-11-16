@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>PWC Zones — Broward + Miami-Dade</title>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>PWC Zones</h1>
+    <span class="sub">Miami-Dade + Broward · manatee &amp; boating-restricted areas</span>
+  </div>
+  <div class="clock" aria-live="polite">
+    <div class="clock-main">
+      <span id="clock-mode-tag" class="tag tag-live">LIVE</span>
+      <strong id="clock-time">—</strong>
+    </div>
+    <div class="clock-info">
+      <span id="season-broward" class="pill">Broward: —</span>
+      <span id="season-md" class="pill">Miami-Dade: —</span>
+      <span id="holiday" class="pill pill-holiday" hidden></span>
+    </div>
+  </div>
+  <div class="time-controls">
+    <div class="seg" role="group" aria-label="Clock mode">
+      <button type="button" id="mode-live" class="active" aria-pressed="true">Live</button>
+      <button type="button" id="mode-pick" aria-pressed="false">Pick date/time</button>
+    </div>
+    <label class="dt">
+      <span class="visually-hidden">Date and time (America/New_York)</span>
+      <input type="datetime-local" id="pick-input" step="60">
+    </label>
+    <div class="presets">
+      <button type="button" data-preset="sat10">Next Sat 10:00</button>
+      <button type="button" data-preset="wkday10">Next weekday 10:00</button>
+      <button type="button" data-preset="sat20">Sat 20:00</button>
+      <button type="button" data-preset="apr15">Apr 15 (Broward off-season / MD in-season)</button>
+    </div>
+  </div>
+</header>
+
+<div id="pe-banner" class="pe-banner" role="alert" hidden>
+  <div>
+    <strong>Port Everglades:</strong> waters west of the ICW are a USCG security zone — no entry without COTP Miami permission
+    (<a href="tel:+13055354472">305-535-4472</a> / VHF 16). 100-yd moving zones around cruise ships/tankers west of Buoy PE;
+    700/500/350-yd zones around aircraft carriers. Monitor VHF 16.
+    <span class="pe-noais">No AIS / live ship-position feed is shown in this app — you must watch for ships yourself.</span>
+    <span id="pe-banner-src" class="pe-src"></span>
+  </div>
+  <button type="button" id="pe-banner-close" class="pe-close" aria-label="Dismiss for this point">×</button>
+</div>
+
+<main class="layout">
+  <div id="map" aria-label="Map"></div>
+
+  <aside id="panel" class="panel">
+    <button type="button" id="sheet-toggle" class="sheet-toggle" aria-expanded="true" aria-controls="panel-body">
+      <span class="handle"></span><span id="sheet-toggle-label">Hide panel</span>
+    </button>
+    <div id="panel-body" class="panel-body">
+      <div id="load-status" class="load-status">Loading zones…</div>
+
+      <section class="card">
+        <h2>Layers</h2>
+        <div class="toggles">
+          <label><input type="checkbox" id="lyr-manatee" checked> Manatee (68C)</label>
+          <label><input type="checkbox" id="lyr-bra" checked> Boating Restricted (68D)</label>
+          <label><input type="checkbox" id="lyr-uscg" checked> USCG</label>
+          <label><input type="checkbox" id="lyr-ramps" checked> Ramps</label>
+          <label class="sub-toggle"><input type="checkbox" id="ramps-all"> show all inventory ramps in file</label>
+        </div>
+        <label class="county">County
+          <select id="county-filter">
+            <option value="all">All</option>
+            <option value="broward">Broward</option>
+            <option value="miami-dade">Miami-Dade</option>
+          </select>
+        </label>
+        <p class="hint">Toggles only change what is drawn. Point checks always use every zone.</p>
+        <div class="locate-row">
+          <button type="button" id="locate-btn" class="btn-primary">Locate me</button>
+          <span id="locate-status" class="hint"></span>
+        </div>
+      </section>
+
+      <section class="card" id="here-card" hidden>
+        <h2>Your position</h2>
+        <div id="here-body"></div>
+      </section>
+
+      <section class="card" id="point-card" hidden>
+        <h2>Selected point</h2>
+        <div id="point-body"></div>
+      </section>
+
+      <section class="card">
+        <h2>Time-dependent zones</h2>
+        <p class="hint">Rules that change by season, day or hour. Click one to zoom.</p>
+        <ul id="td-list" class="td-list"></ul>
+      </section>
+
+      <section class="card">
+        <h2>Legend</h2>
+        <ul class="legend">
+          <li><span class="sw sw-noentry"></span> No entry / restricted entry / motorboats prohibited</li>
+          <li><span class="sw sw-idle"></span> Idle speed, no wake</li>
+          <li><span class="sw sw-slow"></span> Slow speed, minimum wake</li>
+          <li><span class="sw sw-mph"></span> Max speed (25 MPH)</li>
+          <li><span class="sw sw-mph-light"></span> Max speed (30/35 MPH)</li>
+          <li><span class="sw sw-none"></span> No restriction at selected time</li>
+          <li><span class="sw sw-digitized"></span> <span class="tag tag-digitized">DIGITIZED</span> hand-digitized (not official GIS)</li>
+                    <li><span class="dot dot-open"></span> Ramp open · <span class="dot dot-verify"></span> verify · <span class="dot dot-closed"></span> closed</li>
+        </ul>
+        <p class="hint">Where zones overlap, the strictest rule applies.</p>
+      </section>
+
+      <details class="card sources">
+        <summary><h2>Sources &amp; caveats</h2></summary>
+        <ul>
+          <li>FWC Boating &amp; Waterways GIS: layer 9 (Manatee Protection Zones, 68C-22), layer 10 (Boating Restricted Areas, 68D-24) and
+            layer 4 (boat ramp inventory). Fetched <b>2026-11-16</b>. The 68D layer was last edited in GIS <b>2025-06-03</b>.</li>
+          <li>68D-24.006 was repealed in 2013 and is not used.</li>
+          <li><b>Lauderdale Beach ICW Zone</b>, 68D-24.008(1)(a)15. (effective <b>Feb 3, 2026</b>): rule text checked against the FAC.
+            It is missing from GIS, so the polygon is <span class="tag tag-digitized">DIGITIZED</span>. It fills the ICW between the Oakland Park
+            idle zone (1,500 ft south of that bridge) and the Sunrise idle zone (2,250 ft north of that bridge), as the rule defines it.
+            Not survey grade.</li>
+          <li><b>Hallandale Beach Blvd</b>, 68D-24.008(1)(a)14.c: confirmed in force (adopted in the 9-27-21 amendment). It is Slow Speed Minimum Wake
+            from 400 ft south of the bridge to the Dade/Broward line. The GIS note "To be voted on by Commission 8/5/2021" is out of date.</li>
+          <li><b>USCG</b> 33 CFR 165.760 fixed security zones and the 165.765 slow-speed area at Port Everglades use NOAA's official
+            harbor chart geometry (ENC cells US5PEFBA/US5PEFCA), which follows the real pier faces and shoreline. Every coordinate in the
+            regulations lies within 16 m of NOAA's boundary. Moving zones (165.760 cruise ships and tankers, 165.711 aircraft carriers) cannot be
+            mapped, and this app has <b>no AIS feed</b>. 33 CFR 334.580 (Navy area off Port Everglades and Dania Beach) bans anchoring,
+            trawling and dredging but not passing through; it is listed in the Buoy PE note.</li>
+          <li><b>County and city ordinances are NOT digitized.</b> Municode could not be reached from the build environment, and no polygons
+            were made up. These include Broward County, Fort Lauderdale Ch. 8 §8-166, Lighthouse Point Ch. 90,
+            Deerfield Beach Ch. 74 §74-46 and Dania Beach. Rules in Hollywood, Hallandale Beach and Pompano Beach were not checked.
+            <ul class="links">
+              <li><a href="https://library.municode.com/fl/broward_county/codes/code_of_ordinances" target="_blank" rel="noopener">Broward County Code of Ordinances</a></li>
+              <li><a href="https://library.municode.com/fl/fort_lauderdale/codes/code_of_ordinances?nodeId=COOR_CH8BODOBEWA_ARTVBOWA_DIV2WASARU_S8-166SPLIWA" target="_blank" rel="noopener">Fort Lauderdale §8-166 speed limits</a></li>
+              <li><a href="https://library.municode.com/fl/lighthouse_point/codes/code_of_ordinances?nodeId=PTIICICO_CH90WA" target="_blank" rel="noopener">Lighthouse Point Ch. 90 Waterways</a></li>
+              <li><a href="https://library.municode.com/fl/deerfield_beach/codes/code_of_ordinances?nodeId=PTIICOOR_CH74WA_ARTIIBO_DIV2ABWRJUVE_S74-46ABVEGE" target="_blank" rel="noopener">Deerfield Beach §74-46</a></li>
+              <li><a href="https://library.municode.com/fl/dania_beach/codes/code_of_ordinances" target="_blank" rel="noopener">Dania Beach Code of Ordinances</a></li>
+            </ul>
+          </li>
+          <li>FWC official maps:
+            <a href="https://myfwc.com/media/7289/browardmpz-maps.pdf" target="_blank" rel="noopener">Broward manatee zone maps (PDF)</a> ·
+            <a href="https://myfwc.com/media/7288/browardmpz-bramaps.pdf" target="_blank" rel="noopener">Broward BRA maps (PDF)</a></li>
+          <li>The Broward GeoHub boating-facilities layer is a 2018 PDF, and EEPD_Marine_Facility returned 403. Neither is used.
+            Ramp details come from the FWC inventory plus official pages where noted. <b>No official live ramp-capacity feed exists.</b></li>
+          <li>Context only, no polygon: Palm Beach County 68D-24.017, Camino Real Bridge to the county line, is Slow Speed on
+            weekends and holidays from 10 am to 6 pm.</li>
+          <li>Miami-Dade: only the FWC manatee layer (68C-22.025) is included. The Miami-Dade base app was not available.</li>
+          <li>Holidays: the 68D boating zones (Sunrise Blvd Bridge South) use Rule 68D-24.002(5), F.A.C., which adds Columbus Day to the state list. The 68C manatee weekend zone uses § 110.117, F.S. In both, a holiday on Saturday is also observed on Friday and one on Sunday on Monday; the app counts both days.</li>
+        </ul>
+      </details>
+
+      <footer class="disclaimer">Posted signs prevail. The FAC prevails over GIS (68C-22.010(5)). Not for navigation.</footer>
+    </div>
+  </aside>
+</main>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
