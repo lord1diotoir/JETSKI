@@ -23,7 +23,7 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #0f1418;
     --surface: #171e24;
     --surface-2: #212a32;
@@ -38,8 +38,24 @@
     --shadow: 0 1px 3px rgba(0,0,0,.5);
     color-scheme: dark;
   }
-  .leaflet-tile-pane { filter: brightness(.72) contrast(1.1) saturate(.8); }
+  :root:not([data-theme="light"]) .leaflet-tile-pane { filter: brightness(.72) contrast(1.1) saturate(.8); }
 }
+:root[data-theme="dark"] {
+  --bg: #0f1418;
+  --surface: #171e24;
+  --surface-2: #212a32;
+  --text: #e6ebef;
+  --muted: #9aa6b1;
+  --border: #2e3943;
+  --accent: #5aa7ff;
+  --accent-text: #0b1520;
+  --danger: #ff6b7a;
+  --danger-bg: #9d0019;
+  --c-none: #9aa3ab;
+  --shadow: 0 1px 3px rgba(0,0,0,.5);
+  color-scheme: dark;
+  }
+:root[data-theme="dark"] .leaflet-tile-pane { filter: brightness(.72) contrast(1.1) saturate(.8); }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -255,4 +271,11 @@ button, select, input { font: inherit; color: inherit; }
   }
   .sheet-toggle .handle { width: 40px; height: 4px; border-radius: 2px; background: var(--border); }
   .leaflet-popup-content { max-height: 40vh; }
+}
+
+.tile-note {
+  position: absolute; left: 50%; top: 10px; transform: translateX(-50%); z-index: 800;
+  max-width: min(520px, calc(100% - 80px)); padding: 6px 10px; border-radius: 6px;
+  background: var(--surface); color: var(--muted); border: 1px solid var(--border);
+  box-shadow: var(--shadow); font-size: 12px; text-align: center; pointer-events: none;
 }

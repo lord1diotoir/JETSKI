@@ -114,6 +114,14 @@ const map = L.map('map', {
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors · Zones: FWC, eCFR',
+}).on('tileerror', () => {
+  // Some hosts (e.g. the claude.ai page) block map tiles. Zones still draw; say so once.
+  if (document.getElementById('tile-note')) return;
+  const n = document.createElement('div');
+  n.id = 'tile-note';
+  n.className = 'tile-note';
+  n.textContent = 'Background map tiles could not load here. Zones, ramps and rules still work; open the app locally for the street map.';
+  document.getElementById('map').appendChild(n);
 }).addTo(map);
 
 // Low-severity zones underneath so small strict zones stay clickable/visible on top.
@@ -503,7 +511,9 @@ $('locate-btn').addEventListener('click', () => {
   $('locate-status').textContent = 'Waiting for GPS…';
   btn.textContent = 'Stop tracking'; btn.classList.add('on');
   state.watchId = navigator.geolocation.watchPosition(onPosition, (err) => {
-    $('locate-status').textContent = `Location error: ${err.message}`;
+    $('locate-status').textContent = err.code === 1
+      ? 'Location is blocked here. The claude.ai page cannot use GPS; run the app in a normal browser (npm run serve) to track your position.'
+      : `Location error: ${err.message}`;
   }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 30000 });
 });
 
