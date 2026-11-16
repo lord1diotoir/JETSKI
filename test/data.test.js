@@ -46,7 +46,7 @@ test('feature counts', () => {
   assert.equal(manatee.metadata.count, manatee.features.length);
   assert.equal(bra.features.length, 20);
   assert.equal(bra.metadata.count, 20);
-  assert.equal(dig.features.length, 4);
+  assert.equal(dig.features.length, 3);
 });
 
 test('metadata present', () => {
@@ -101,13 +101,13 @@ test('manatee seasons per county', () => {
 });
 
 test('digitized features: ids, properties, valid closed rings', () => {
-  const want = ['uscg-760-midnorth', 'uscg-760-midsouth', 'uscg-765-rna', 'fwc68d-lauderdale-beach-icw'];
+  const want = ['uscg-760-fixed', 'uscg-765-rna', 'fwc68d-lauderdale-beach-icw'];
   const byId = Object.fromEntries(dig.features.map((f) => [f.properties._id, f]));
   for (const id of want) {
     const f = byId[id];
     assert.ok(f, id);
     const p = f.properties;
-    assert.equal(p._status, 'digitized');
+    assert.ok(['digitized', 'gis'].includes(p._status), id);
     assert.equal(p.schedule, 'At All Times');
     assert.ok(['No Entry Without COTP Permission', 'Slow Speed', 'Slow Speed Minimum Wake'].includes(p.restriction));
     for (const k of ['_layer', 'name', 'rule', 'ruleUrl', 'notes', 'method']) assert.ok(p[k], `${id}.${k}`);
@@ -119,9 +119,13 @@ test('digitized features: ids, properties, valid closed rings', () => {
       for (const [lon, lat] of r) assert.ok(lon < -80 && lon > -80.2 && lat > 26 && lat < 26.2, `${id} in Port Everglades / Ft Lauderdale area`);
     }
   }
-  assert.equal(byId['uscg-760-midnorth'].properties._layer, 'uscg');
+  assert.equal(byId['uscg-760-fixed'].properties._layer, 'uscg');
+  assert.equal(byId['uscg-760-fixed'].properties._status, 'gis');
+  assert.match(byId['uscg-760-fixed'].properties.method, /NOAA ENC/);
   assert.equal(byId['uscg-765-rna'].properties.restriction, 'Slow Speed');
-  assert.equal(byId['uscg-760-midsouth'].properties.restriction, 'No Entry Without COTP Permission');
+  assert.equal(byId['uscg-765-rna'].properties._status, 'gis');
+  assert.equal(byId['uscg-760-fixed'].properties.restriction, 'No Entry Without COTP Permission');
+  assert.equal(byId['fwc68d-lauderdale-beach-icw'].properties._status, 'digitized');
   const lb = byId['fwc68d-lauderdale-beach-icw'];
   assert.equal(lb.properties._layer, 'bra');
   assert.equal(lb.properties.restriction, 'Slow Speed Minimum Wake');

@@ -36,9 +36,8 @@ Top-level FeatureCollection gets `"metadata": {source, url, fetched:"2026-11-16"
 3. `digitized.geojson` — hand-digitized features, each with properties:
    `{_layer, _id, _status:"digitized", name, rule, ruleUrl, restriction, schedule, notes, method}` where
    `restriction` ∈ {"No Entry Without COTP Permission","Slow Speed","Slow Speed Minimum Wake"} and `schedule`="At All Times".
-   - `uscg-760-midnorth` (_layer "uscg") 33 CFR 165.760(b)(3) Mid-Port→North-Port fixed security zone.
-   - `uscg-760-midsouth` (_layer "uscg") 165.760(b)(3) west of ICW, Mid-Port south to Dania Cut-Off.
-   - `uscg-765-rna` (_layer "uscg") 165.765 slow speed RNA, vessels < 150 m.
+   - `uscg-760-fixed` (_layer "uscg", _status "gis") 33 CFR 165.760(b)(3) fixed security zones, geometry from NOAA ENC RESARE 78199+78202.
+   - `uscg-765-rna` (_layer "uscg", _status "gis") 165.765 slow speed RNA, vessels < 150 m, geometry from NOAA ENC RESARE 78200.
    - `fwc68d-lauderdale-beach-icw` (_layer "bra") — Lauderdale Beach ICW Zone, Slow Speed Minimum Wake, all year,
      amendment eff. 2026-02-03 (https://flrules.org/Gateway/View_notice.asp?id=30326291), missing from GIS.
      Rule text could NOT be fetched (Cloudflare challenge) → `_status:"digitized"` and notes say "digitized from

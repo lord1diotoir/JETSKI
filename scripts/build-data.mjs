@@ -77,6 +77,14 @@ if (process.argv.includes('--refresh')) {
     renameSync(tmp, dest);
     console.log(`  ${j.features.length} features`);
   }
+  {
+    const url = 'https://encdirect.noaa.gov/arcgis/rest/services/encdirect/enc_harbour/MapServer/197/query?where=1%3D1&geometry=-80.13,26.055,-80.105,26.106&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=4326&f=geojson';
+    const dest = join(RAW, 'noaa_enc_resare_port_everglades.geojson'), tmp = dest + '.tmp';
+    console.log(`refresh NOAA ENC RESARE <- ${url}`);
+    execFileSync('curl', ['-sS', '--fail', '--compressed', '-o', tmp, url], { stdio: 'inherit' });
+    if (!(JSON.parse(readFileSync(tmp, 'utf8')).features || []).length) throw new Error('refresh NOAA: no features');
+    renameSync(tmp, dest);
+  }
   console.warn('NOTE: --refresh changes the inputs; metadata.fetched still says ' + FETCHED + ' — update FETCHED if you keep the new snapshot.');
 }
 
@@ -167,43 +175,39 @@ mustContain(xml760, '165.760', ['26°05′24″ N, 080°06′57″ W', '26°06�
 mustContain(xml765, '165.765', ['26°05.687′ N, 080°06.684′ W', '26°05.552′ N, 080°06.682′ W', '26°05.482′ N, 080°06.793′ W', '26°05.666′ N, 080°06.947′ W', '150 meters']);
 mustContain(xml711, '165.711', ['26°05.5′ N, 80°04.8′ W', '26°04.9′ N, 80°06.9′ W', '700 yards forward, 500 yards astern and 350 yards']);
 
-// (a) 165.760(b)(3) Mid-Port -> North-Port. East line from the CFR; west closure approximated to the
-// pier face of the main turning basin / Northport berths (lon ~ -80.1225). Not survey grade.
-const mn = [
-  [W(80, 6, 57), N(26, 5, 24)], // northern tip of Berth 22 (southernmost point)
-  [W(80, 7, 9), N(26, 6, 1)],   // near west side of 17th Street Bridge
-  [W(80, 7, 10), N(26, 6, 1)],  // northwesternmost point
+// (a)-(c) USCG zones from NOAA's harbour-scale ENC (cells US5PEFBA / US5PEFCA), layer Restricted_Area_area
+// (S-57 RESARE), snapshot data/raw/noaa_enc_resare_port_everglades.geojson. NOAA charts the 165.760 fixed security zone
+// to the real pier faces and shorelines (land cut out as holes) and the 165.765 RNA shore to shore.
+// Guard: every coordinate the CFR gives must lie on or next to NOAA's boundary.
+const encRaw = readJSON('noaa_enc_resare_port_everglades.geojson').features;
+const encById = Object.fromEntries(encRaw.map((f) => [f.properties.OBJECTID, f]));
+for (const id of [78199, 78202, 78200]) if (!encById[id]) throw new Error(`NOAA ENC RESARE ${id} missing`);
+const ringsOf = (g) => (g.type === 'Polygon' ? g.coordinates : g.coordinates.flat());
+const KX = 111320 * Math.cos((26.09 * Math.PI) / 180), KY = 110574;
+function distToRingsM([px, py], rings) {
+  let best = Infinity;
+  for (const r of rings) for (let i = 1; i < r.length; i++) {
+    const [ax, ay] = [r[i - 1][0] * KX, r[i - 1][1] * KY], [bx, by] = [r[i][0] * KX, r[i][1] * KY];
+    const [x, y] = [px * KX, py * KY], dx = bx - ax, dy = by - ay;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy || 1)));
+    best = Math.min(best, Math.hypot(x - ax - t * dx, y - ay - t * dy));
+  }
+  return best;
+}
+const fixedGeom = {
+  type: 'MultiPolygon',
+  coordinates: [encById[78199].geometry.coordinates, encById[78202].geometry.coordinates],
+};
+const rnaGeom = encById[78200].geometry;
+const CFR_760_POINTS = [
+  [W(80, 6, 57), N(26, 5, 24)], [W(80, 7, 9), N(26, 6, 1)], [W(80, 7, 10), N(26, 6, 1)],
+  [W(80, 6, 58), N(26, 5, 25)], [W(80, 6, 54), N(26, 5, 25)], [W(80, 6, 49), N(26, 5, 10)],
+  [W(80, 6, 53), N(26, 4, 43)], [W(80, 6, 52), N(26, 3, 54)], [W(80, 6, 55), N(26, 3, 54)],
 ];
-const midNorthRing = closeRing([
-  ...mn,
-  [-80.1225, N(26, 6, 1)],   // approx. west closure along Northport bulkhead (approximation)
-  [-80.1225, N(26, 5, 24)],  // approx. west edge of main turning basin (approximation)
-]);
-// (b) 165.760(b)(3) west of the ICW, Mid-Port south to the Dania Cut-Off. East line from the CFR; west closure
-// approximated to the Midport berth face and the Southport turning basin.
-const ms = [
-  [W(80, 6, 58), N(26, 5, 25)], // northern tip of Berth 22
-  [W(80, 6, 54), N(26, 5, 25)], // directly east on the ICW
-  [W(80, 6, 49), N(26, 5, 10)],
-  [W(80, 6, 53), N(26, 4, 43)],
-  [W(80, 6, 52), N(26, 3, 54)],
-  [W(80, 6, 55), N(26, 3, 54)], // pier face just north of the Dania Cut-Off Canal
-];
-const midSouthRing = closeRing([
-  ...ms,
-  [-80.1158, 26.0730],  // approx. Southport berth face, south side of turning basin (approximation)
-  [-80.1205, 26.0730],  // approx. west edge of Southport turning basin (approximation)
-  [-80.1205, 26.0830],  // approx. NW corner of Southport turning basin (approximation)
-  [-80.1170, 26.0830],  // approx. Midport berth face (approximation)
-  [-80.1170, N(26, 5, 25)],
-]);
-// (c) 165.765 RNA — fully defined by the CFR.
-const rnaRing = closeRing([
-  [W(80, 6.684), N(26, 5.687)], // south mid-point tip of Harbor Heights
-  [W(80, 6.682), N(26, 5.552)], // north of Nova University marina
-  [W(80, 6.793), N(26, 5.482)], // near center of Lake Mabel
-  [W(80, 6.947), N(26, 5.666)], // near QFl R "12"
-]);
+const CFR_765_POINTS = [[W(80, 6.684), N(26, 5.687)], [W(80, 6.682), N(26, 5.552)], [W(80, 6.793), N(26, 5.482)], [W(80, 6.947), N(26, 5.666)]];
+const maxOff = (pts, g) => Math.max(...pts.map((p) => distToRingsM(p, ringsOf(g))));
+const off760 = maxOff(CFR_760_POINTS, fixedGeom), off765 = maxOff(CFR_765_POINTS, rnaGeom);
+if (off760 > 30 || off765 > 30) throw new Error(`NOAA ENC polygons disagree with CFR points (${off760.toFixed(1)} m / ${off765.toFixed(1)} m)`);
 
 // (d) 68D-24.008 Lauderdale Beach ICW Zone — clip the countywide (1)(b) ICW polygon to a lat band.
 const FT_PER_DEG_LAT = 364000;
@@ -236,33 +240,25 @@ const COTP = 'Captain of the Port Miami (305-535-4472, VHF 16)';
 const digitized = [
   {
     props: {
-      _layer: 'uscg', _id: 'uscg-760-midnorth', name: 'Port Everglades Mid-Port to North-Port Security Zone',
+      _layer: 'uscg', _id: 'uscg-760-fixed', _status: 'gis', name: 'Port Everglades Fixed Security Zones',
       rule: '33 CFR 165.760(b)(3)', ruleUrl: ECFR['165.760'],
       restriction: 'No Entry Without COTP Permission', schedule: 'At All Times',
-      notes: `Fixed security zone: all waters west of the line from the northern tip of Berth 22 to near the west side of the 17th Street Bridge. Do not enter without permission of the ${COTP}.`,
-      method: 'East boundary from 33 CFR 165.760(b)(3) coordinates (DMS -> decimal, NAD83 ~ WGS84); west closure approximated to the port pier face / turning-basin edge (lon -80.1225) — not survey grade.',
+      notes: `Two fixed security zones: (1) Mid-Port to North-Port, all waters west of the line from the northern tip of Berth 22 to the west side of the 17th Street Bridge; (2) waters west of the Intracoastal Waterway to the pier face, from Mid-Port south to the Dania Cut-Off Canal. Transit on the ICW itself is allowed; entry requires permission of the ${COTP}. If a large vessel encroaches into the ICW, pass east of the on-scene law enforcement vessel.`,
+      method: `Geometry from NOAA ENC (US5PEFBA/US5PEFCA, RESARE OBJECTID 78199 + 78202, "Port Everglades Fixed Security Zone", source date 2019-07-12) via encdirect.noaa.gov, fetched ${FETCHED}. Checked: all 9 coordinates in 33 CFR 165.760(b)(3) lie within ${off760.toFixed(0)} m of NOAA's boundary.`,
+      source: 'NOAA ENC',
     },
-    geometry: { type: 'Polygon', coordinates: [midNorthRing] },
+    geometry: fixedGeom,
   },
   {
     props: {
-      _layer: 'uscg', _id: 'uscg-760-midsouth', name: 'Port Everglades Mid-Port to Dania Cut-Off Security Zone (west of ICW)',
-      rule: '33 CFR 165.760(b)(3)', ruleUrl: ECFR['165.760'],
-      restriction: 'No Entry Without COTP Permission', schedule: 'At All Times',
-      notes: `Fixed security zone: waters west of the Intracoastal Waterway to the Port Everglades pier face, from Mid-Port south to the northern tip of the Dania Cut-Off Canal. Transit on the ICW itself is allowed; entry west of the line requires permission of the ${COTP}. If a large vessel encroaches into the ICW, pass east of the on-scene law enforcement vessel.`,
-      method: 'East boundary from 33 CFR 165.760(b)(3) coordinates (DMS -> decimal); west closure approximated to the Midport berth face and the Southport turning basin (lon -80.1170 / -80.1205, lat 26.073-26.083) — not survey grade.',
-    },
-    geometry: { type: 'Polygon', coordinates: [midSouthRing] },
-  },
-  {
-    props: {
-      _layer: 'uscg', _id: 'uscg-765-rna', name: 'Port Everglades Harbor Regulated Navigation Area',
+      _layer: 'uscg', _id: 'uscg-765-rna', _status: 'gis', name: 'Port Everglades Harbor Regulated Navigation Area',
       rule: '33 CFR 165.765', ruleUrl: ECFR['165.765'],
       restriction: 'Slow Speed', schedule: 'At All Times',
       notes: 'Vessels less than 150 m entering and transiting shall proceed at slow speed (fully off plane, settled, no excessive wake). State/local manatee zones still apply.',
-      method: 'All four vertices from 33 CFR 165.765(a) (decimal minutes -> decimal degrees); CFR says "approximately" and "shore to shore".',
+      method: `Geometry from NOAA ENC (US5PEFBA, RESARE OBJECTID 78200, "no wake area", 33 CFR 165.765) via encdirect.noaa.gov, fetched ${FETCHED}. Checked: the 4 CFR vertices lie within ${off765.toFixed(0)} m of NOAA's boundary.`,
+      source: 'NOAA ENC',
     },
-    geometry: { type: 'Polygon', coordinates: [rnaRing] },
+    geometry: rnaGeom,
   },
   {
     props: {
@@ -300,7 +296,7 @@ writeJSON('digitized.geojson', {
 const buoyPE = [W(80, 4, 46), N(26, 5, 30)];
 const uscgPoints = {
   metadata: {
-    source: '33 CFR 165.760 and 165.711 (eCFR, current as of 2026-11-16)',
+    source: '33 CFR 165.760, 165.711 and 334.580 (eCFR, current as of 2026-11-16)',
     url: [ECFR['165.760'], ECFR['165.711']],
     fetched: FETCHED,
     notes: 'Moving zones cannot be mapped statically; the app shows them as descriptions plus an alert when the user is in portEvergladesAlertArea. Coordinates NAD83 (≈ WGS84), [lon, lat].',
@@ -331,6 +327,11 @@ const uscgPoints = {
       appliesTo: 'Naval aircraft carriers entering or departing Port Everglades',
       activeWhere: 'Between the Port Everglades Sea Buoy (approx. 26°05.5′N 80°04.8′W) and the pier (approx. 26°04.9′N 80°06.9′W)',
       description: 'Moving safety zone 700 yards ahead, 500 yards astern and 350 yards on each side of a naval aircraft carrier entering or departing Port Everglades. No entry without COTP Miami authorization; follow on-scene patrol instructions (VHF 16).',
+    },
+    {
+      id: 'usace-334-580', rule: '33 CFR 334.580', ruleUrl: 'https://www.ecfr.gov/current/title-33/chapter-II/part-334/section-334.580', kind: 'area-note',
+      activeWhere: 'Off Port Everglades and Dania Beach: from 26°05′30″N south to 26°01′36″N, between 80°03′30″W and about 80°06′40″W (charted on NOAA ENC as a military area)',
+      description: 'Naval Surface Warfare Center restricted area: no anchoring, trawling, dredging or attaching anything to the sea bottom. Passing through is not restricted by this rule.',
     },
   ],
   portEvergladesAlertArea: {

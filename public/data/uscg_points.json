@@ -1,6 +1,6 @@
 {
  "metadata": {
-  "source": "33 CFR 165.760 and 165.711 (eCFR, current as of 2026-11-16)",
+  "source": "33 CFR 165.760, 165.711 and 334.580 (eCFR, current as of 2026-11-16)",
   "url": [
    "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.760",
    "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.711"
@@ -54,6 +54,14 @@
    "appliesTo": "Naval aircraft carriers entering or departing Port Everglades",
    "activeWhere": "Between the Port Everglades Sea Buoy (approx. 26°05.5′N 80°04.8′W) and the pier (approx. 26°04.9′N 80°06.9′W)",
    "description": "Moving safety zone 700 yards ahead, 500 yards astern and 350 yards on each side of a naval aircraft carrier entering or departing Port Everglades. No entry without COTP Miami authorization; follow on-scene patrol instructions (VHF 16)."
+  },
+  {
+   "id": "usace-334-580",
+   "rule": "33 CFR 334.580",
+   "ruleUrl": "https://www.ecfr.gov/current/title-33/chapter-II/part-334/section-334.580",
+   "kind": "area-note",
+   "activeWhere": "Off Port Everglades and Dania Beach: from 26°05′30″N south to 26°01′36″N, between 80°03′30″W and about 80°06′40″W (charted on NOAA ENC as a military area)",
+   "description": "Naval Surface Warfare Center restricted area: no anchoring, trawling, dredging or attaching anything to the sea bottom. Passing through is not restricted by this rule."
   }
  ],
  "portEvergladesAlertArea": {
