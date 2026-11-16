@@ -191,7 +191,8 @@ function applyLayerVisibility() {
     }
   }
   toggleGroup(groups.uscgInfo, on.uscg && county !== 'miami-dade');
-  toggleGroup(groups.ramps, $('lyr-ramps').checked && county !== 'miami-dade');
+  toggleGroup(groups.ramps, $('lyr-ramps').checked);
+  applyRampFilter();
 }
 function toggleGroup(g, on) {
   if (on && !map.hasLayer(g)) g.addTo(map);
@@ -634,8 +635,10 @@ function buildRamps() {
 }
 function applyRampFilter() {
   const all = $('ramps-all').checked;
+  const county = $('county-filter').value;
+  const countyOk = (r) => county === 'all' || !r.county || r.county === (county === 'miami-dade' ? 'MIAMI-DADE' : 'BROWARD');
   groups.ramps.clearLayers();
-  for (const m of rampMarkers) if (all || m._ramp.pwcDefault) groups.ramps.addLayer(m);
+  for (const m of rampMarkers) if ((all || m._ramp.pwcDefault) && countyOk(m._ramp)) groups.ramps.addLayer(m);
 }
 function renderRampsPopups() {
   for (const m of rampMarkers) if (m.isPopupOpen()) m.setPopupContent(rampHtml(m._ramp));

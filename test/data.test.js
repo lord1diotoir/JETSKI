@@ -173,3 +173,15 @@ test('ramps curated', () => {
   assert.equal(byOid[162].source, 'fwc-inventory');
   assert.ok(byOid[162].notes.includes('no official page checked'));
 });
+
+test('Miami-Dade ramps present and filtered', () => {
+  const md = ramps.filter((r) => r.county === 'MIAMI-DADE');
+  assert.equal(md.length, 11);
+  for (const r of md) {
+    assert.equal(r.source, 'fwc-inventory');
+    assert.ok(r.lat > 25.30 && r.lat < 26.0, r.name);
+    assert.equal(r.fwc.WaterType, 'Salt or Brackish Water');
+  }
+  for (const oid of [1349, 1332, 1370]) assert.ok(!ramps.some((r) => r.fwc.OBJECTID === oid), `excluded ${oid}`);
+  assert.equal(ramps.find((r) => r.fwc.OBJECTID === 1344).status, 'closed'); // Legion Park
+});

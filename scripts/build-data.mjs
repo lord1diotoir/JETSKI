@@ -19,6 +19,7 @@ const FWC = {
   manatee_md: 'https://gis.myfwc.com/hosting/rest/services/Open_Data/State_Manatee_Protection_Zones_in_Florida/MapServer/9/query?where=COUNTY%3D%27MIAMI-DADE%27&outFields=*&outSR=4326&f=geojson',
   bra_broward: 'https://gis.myfwc.com/hosting/rest/services/Open_Data/State_Boating_Safety_Zones_Florida/MapServer/10/query?where=RULE_NUM%3D%2768D-24.008%27&outFields=*&outSR=4326&f=geojson',
   ramps_broward: 'https://gis.myfwc.com/mapping/rest/services/Open_Data/FWC_Florida_Boat_Ramp_Inventory/MapServer/4/query?where=County%3D%27BROWARD%27&outFields=*&outSR=4326&f=geojson',
+  ramps_md: 'https://gis.myfwc.com/mapping/rest/services/Open_Data/FWC_Florida_Boat_Ramp_Inventory/MapServer/4/query?where=County%3D%27MIAMI-DADE%27&outFields=*&outSR=4326&f=geojson',
 };
 const ECFR = {
   '165.760': 'https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.760',
@@ -345,7 +346,7 @@ const uscgPoints = {
 writeJSON('uscg_points.json', uscgPoints);
 
 // ---------- 5. ramps ----------
-const rampsRaw = readJSON('ramps_broward.geojson').features;
+const rampsRaw = [...readJSON('ramps_broward.geojson').features, ...readJSON('ramps_md.geojson').features];
 const rampById = Object.fromEntries(rampsRaw.map((f) => [f.properties.OBJECTID, f]));
 const FTL = { url: 'https://www.parks.fortlauderdale.gov/programs/marinas', phone: '954-828-4626' };
 const BRIEF = 'per project brief (official page could not be fetched from the build sandbox)';
@@ -376,8 +377,20 @@ const CURATED = [
     notes: ['State park entry fee applies.'] },
   { oid: 162, name: 'Snook Creek Public Boat Ramp', inventoryOnly: true, notes: ['no official page checked'] },
   { oid: 159, name: 'Riverland Woods Park Boat Ramp', inventoryOnly: true, notes: ['no official page checked'] },
+  // Miami-Dade: motorized public saltwater ramps from the FWC inventory only (no Miami-Dade ramp brief was available).
+  { oid: 1337, name: 'Haulover Marine Center (Bill Bird Marina) Boat Ramp', inventoryOnly: true, notes: ['Miami-Dade: FWC inventory only; no official page checked — verify hours, fees and PWC rules before going.'] },
+  { oid: 1341, name: 'Pelican Harbor Park Boat Ramp', inventoryOnly: true, notes: ['Miami-Dade: FWC inventory only; no official page checked — verify hours, fees and PWC rules before going.'] },
+  { oid: 1344, name: 'Legion Park Boat Ramp', inventoryOnly: true, notes: ['Miami-Dade: FWC inventory only; no official page checked — verify hours, fees and PWC rules before going.'] },
+  { oid: 1342, name: 'Morningside Park Boat Ramp', inventoryOnly: true, notes: ['Miami-Dade: FWC inventory only; no official page checked — verify hours, fees and PWC rules before going.'] },
+  { oid: 1343, name: 'Gerry Curtis Park Boat Ramp (Miami River)', inventoryOnly: true, notes: ['Miami-Dade: FWC inventory only; no official page checked — verify hours, fees and PWC rules before going.'] },
+  { oid: 1324, name: 'Watson Island Lot 70 Boat Ramp', inventoryOnly: true, notes: ['Miami-Dade: FWC inventory only; no official page checked — verify hours, fees and PWC rules before going.'] },
+  { oid: 1345, name: 'Regatta Park — Seminole Boat Ramp', inventoryOnly: true, notes: ['Miami-Dade: FWC inventory only; no official page checked — verify hours, fees and PWC rules before going.'] },
+  { oid: 1336, name: 'Crandon Park Marina Boat Ramp', inventoryOnly: true, notes: ['Miami-Dade: FWC inventory only; no official page checked — verify hours, fees and PWC rules before going.'] },
+  { oid: 1335, name: 'Matheson Hammock Park Marina Boat Ramp', inventoryOnly: true, notes: ['Miami-Dade: FWC inventory only; no official page checked — verify hours, fees and PWC rules before going.'] },
+  { oid: 1340, name: 'Black Point Park Marina Boat Ramp', inventoryOnly: true, notes: ['Miami-Dade: FWC inventory only; no official page checked — verify hours, fees and PWC rules before going.'] },
+  { oid: 1338, name: 'Homestead Bayfront Park Marina Boat Ramp', inventoryOnly: true, notes: ['Miami-Dade: FWC inventory only; no official page checked — verify hours, fees and PWC rules before going.'] },
 ];
-export const EXCLUDED_RAMPS = [142, 128, 137, 186, 195, 155, 164];
+export const EXCLUDED_RAMPS = [142, 128, 137, 186, 195, 155, 164, 1349, 1332, 1370, 1359];
 const titleCase = (s) => (s || '').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 const normPhone = (s) => (s && s !== 'NA' ? s.replace(/[()]/g, '').replace(/\s+/, '-').trim() : null);
 const ramps = CURATED.map((c) => {
@@ -403,6 +416,7 @@ const ramps = CURATED.map((c) => {
   return {
     id: `fwc-ramp-${c.oid}`,
     name: c.name,
+    county: p.County === 'MIAMI-DADE' ? 'MIAMI-DADE' : 'BROWARD',
     lat: r6(lat), lon: r6(lon),
     address: off.address || c.address || p.Street1 || null,
     city: titleCase(p.City),
@@ -429,10 +443,10 @@ const ramps = CURATED.map((c) => {
 writeJSON('ramps.json', {
   metadata: {
     source: 'FWC Florida Boat Ramp Inventory (MapServer layer 4, Broward), curated; official facts per project brief',
-    url: FWC.ramps_broward,
+    url: [FWC.ramps_broward, FWC.ramps_md],
     fetched: FETCHED,
     count: ramps.length,
-    notes: 'PWC default = motorized public ramps with tidal access to the ICW, inlets, New River/Stranahan, Dania Cut-off and Hillsboro Canal. ' +
+    notes: 'PWC default = motorized public ramps with tidal access: Broward ICW, inlets, New River/Stranahan, Dania Cut-off and Hillsboro Canal; Miami-Dade Biscayne Bay and Miami River (FWC inventory only). ' +
       'Excluded: hand-launch/no-motor, resident/member-only, freshwater inland and Everglades/WMA ramps. ' +
       'Official pages could not be fetched from the build sandbox; facts marked "per project brief". No live capacity feed exists. Call ahead.',
     excludedOBJECTIDs: EXCLUDED_RAMPS,
