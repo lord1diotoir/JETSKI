@@ -1,0 +1,86 @@
+{
+ "metadata": {
+  "source": "33 CFR 165.760 and 165.711 (eCFR, current as of 2026-11-16)",
+  "url": [
+   "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.760",
+   "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.711"
+  ],
+  "fetched": "2026-11-16",
+  "notes": "Moving zones cannot be mapped statically; the app shows them as descriptions plus an alert when the user is in portEvergladesAlertArea. Coordinates NAD83 (≈ WGS84), [lon, lat]."
+ },
+ "buoyPE": [
+  -80.079444,
+  26.091667
+ ],
+ "buoyPEName": "Port Everglades Lighted Buoy PE (approx. 26°05′30″N 080°04′46″W)",
+ "carrierMooring": [
+  -80.115,
+  26.081667
+ ],
+ "seaBuoy": [
+  -80.08,
+  26.091667
+ ],
+ "cotpPhone": "305-535-4472",
+ "vhf": 16,
+ "moving": [
+  {
+   "id": "uscg-760-moving",
+   "rule": "33 CFR 165.760(b)(1)",
+   "ruleUrl": "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.760",
+   "kind": "moving",
+   "radiusYd": 100,
+   "appliesTo": "Passenger vessels (>100 ft, >100 GT, >12 passengers, voyages >24 h, not ferries), vessels carrying cargoes of particular hazard, vessels carrying liquefied hazardous gas (LHG)",
+   "activeWhere": "Underway westward of Port Everglades Lighted Buoy PE (entering or departing)",
+   "description": "Moving security zone 100 yards around passenger (cruise) vessels, vessels carrying cargoes of particular hazard, and LHG vessels while underway west of Buoy PE. Do not enter without COTP Miami permission."
+  },
+  {
+   "id": "uscg-760-moored",
+   "rule": "33 CFR 165.760(b)(1)",
+   "ruleUrl": "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.760",
+   "kind": "fixed-around-vessel",
+   "radiusYd": 100,
+   "appliesTo": "The same vessel classes while moored in Port Everglades",
+   "description": "Fixed security zone 100 yards around such vessels while moored. You may pass within 100 yards of one moored in/alongside a Federal channel only outside the on-scene law enforcement vessel — in Port Everglades pass EAST of the on-scene law enforcement vessel."
+  },
+  {
+   "id": "uscg-711-carrier",
+   "rule": "33 CFR 165.711",
+   "ruleUrl": "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.711",
+   "kind": "moving",
+   "aheadYd": 700,
+   "asternYd": 500,
+   "abeamYd": 350,
+   "appliesTo": "Naval aircraft carriers entering or departing Port Everglades",
+   "activeWhere": "Between the Port Everglades Sea Buoy (approx. 26°05.5′N 80°04.8′W) and the pier (approx. 26°04.9′N 80°06.9′W)",
+   "description": "Moving safety zone 700 yards ahead, 500 yards astern and 350 yards on each side of a naval aircraft carrier entering or departing Port Everglades. No entry without COTP Miami authorization; follow on-scene patrol instructions (VHF 16)."
+  }
+ ],
+ "portEvergladesAlertArea": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     -80.125,
+     26.06
+    ],
+    [
+     -80.079,
+     26.06
+    ],
+    [
+     -80.079,
+     26.105
+    ],
+    [
+     -80.125,
+     26.105
+    ],
+    [
+     -80.125,
+     26.06
+    ]
+   ]
+  ]
+ }
+}

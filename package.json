@@ -1,0 +1,21 @@
+{
+  "name": "pwc-zones",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\"",
+    "build-data": "node scripts/build-data.mjs",
+    "sync-engine": "rm -rf public/engine && cp -r src/engine public/engine",
+    "serve": "npm run sync-engine && python3 -m http.server 8080 -d public"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@turf/area": "^7.4.0",
+    "@turf/bbox-clip": "^7.4.0",
+    "leaflet": "^1.9.4"
+  },
+  "type": "module",
+  "private": true
+}

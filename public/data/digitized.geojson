@@ -1,0 +1,548 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "source": "Hand-digitized from eCFR 33 CFR 165.760 / 165.765 (snapshots 2026-11-16) and the 68D-24.008 amendment notice summary",
+  "url": [
+   "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.760",
+   "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.765",
+   "https://flrules.org/Gateway/View_notice.asp?id=30326291"
+  ],
+  "fetched": "2026-11-16",
+  "count": 4,
+  "notes": "Approximate — not survey grade. See each feature's `method`. Palm Beach context polygons intentionally omitted."
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "_layer": "uscg",
+    "_id": "uscg-760-midnorth",
+    "_status": "digitized",
+    "name": "Port Everglades Mid-Port to North-Port Security Zone",
+    "rule": "33 CFR 165.760(b)(3)",
+    "ruleUrl": "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.760",
+    "restriction": "No Entry Without COTP Permission",
+    "schedule": "At All Times",
+    "notes": "Fixed security zone: all waters west of the line from the northern tip of Berth 22 to near the west side of the 17th Street Bridge. Do not enter without permission of the Captain of the Port Miami (305-535-4472, VHF 16).",
+    "method": "East boundary from 33 CFR 165.760(b)(3) coordinates (DMS -> decimal, NAD83 ~ WGS84); west closure approximated to the port pier face / turning-basin edge (lon -80.1225) — not survey grade."
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -80.115833,
+       26.09
+      ],
+      [
+       -80.119167,
+       26.100278
+      ],
+      [
+       -80.119444,
+       26.100278
+      ],
+      [
+       -80.1225,
+       26.100278
+      ],
+      [
+       -80.1225,
+       26.09
+      ],
+      [
+       -80.115833,
+       26.09
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "_layer": "uscg",
+    "_id": "uscg-760-midsouth",
+    "_status": "digitized",
+    "name": "Port Everglades Mid-Port to Dania Cut-Off Security Zone (west of ICW)",
+    "rule": "33 CFR 165.760(b)(3)",
+    "ruleUrl": "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.760",
+    "restriction": "No Entry Without COTP Permission",
+    "schedule": "At All Times",
+    "notes": "Fixed security zone: waters west of the Intracoastal Waterway to the Port Everglades pier face, from Mid-Port south to the northern tip of the Dania Cut-Off Canal. Transit on the ICW itself is allowed; entry west of the line requires permission of the Captain of the Port Miami (305-535-4472, VHF 16). If a large vessel encroaches into the ICW, pass east of the on-scene law enforcement vessel.",
+    "method": "East boundary from 33 CFR 165.760(b)(3) coordinates (DMS -> decimal); west closure approximated to the Midport berth face and the Southport turning basin (lon -80.1170 / -80.1205, lat 26.073-26.083) — not survey grade."
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -80.116111,
+       26.090278
+      ],
+      [
+       -80.115,
+       26.090278
+      ],
+      [
+       -80.113611,
+       26.086111
+      ],
+      [
+       -80.114722,
+       26.078611
+      ],
+      [
+       -80.114444,
+       26.065
+      ],
+      [
+       -80.115278,
+       26.065
+      ],
+      [
+       -80.1158,
+       26.073
+      ],
+      [
+       -80.1205,
+       26.073
+      ],
+      [
+       -80.1205,
+       26.083
+      ],
+      [
+       -80.117,
+       26.083
+      ],
+      [
+       -80.117,
+       26.090278
+      ],
+      [
+       -80.116111,
+       26.090278
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "_layer": "uscg",
+    "_id": "uscg-765-rna",
+    "_status": "digitized",
+    "name": "Port Everglades Harbor Regulated Navigation Area",
+    "rule": "33 CFR 165.765",
+    "ruleUrl": "https://www.ecfr.gov/current/title-33/chapter-I/subchapter-P/part-165/subpart-F/subject-group-ECFR29926ffa6ceac0d/section-165.765",
+    "restriction": "Slow Speed",
+    "schedule": "At All Times",
+    "notes": "Vessels less than 150 m entering and transiting shall proceed at slow speed (fully off plane, settled, no excessive wake). State/local manatee zones still apply.",
+    "method": "All four vertices from 33 CFR 165.765(a) (decimal minutes -> decimal degrees); CFR says \"approximately\" and \"shore to shore\"."
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -80.1114,
+       26.094783
+      ],
+      [
+       -80.111367,
+       26.092533
+      ],
+      [
+       -80.113217,
+       26.091367
+      ],
+      [
+       -80.115783,
+       26.094433
+      ],
+      [
+       -80.1114,
+       26.094783
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "_layer": "bra",
+    "_id": "fwc68d-lauderdale-beach-icw",
+    "_status": "digitized",
+    "name": "Lauderdale Beach ICW Zone",
+    "rule": "68D-24.008(1)(a)15. F.A.C. (effective 2026-02-03)",
+    "ruleUrl": "https://www.flrules.org/gateway/RuleNo.asp?title=BOATING%20RESTRICTED%20AREAS&ID=68D-24.008",
+    "restriction": "Slow Speed Minimum Wake",
+    "schedule": "At All Times",
+    "notes": "Year-round Slow Speed Minimum Wake, shoreline to shoreline, from 1,500 ft south of the Oakland Park Blvd Bridge to 2,250 ft north of the Sunrise Blvd Bridge. Rule text verified against FAC 68D-24.008(1)(a)15. (history \"Amended ... 2-3-26\"; FAR notice https://flrules.org/Gateway/View_notice.asp?id=30326291). Missing from the FWC GIS layer (last edited 2025-06-03), so the polygon is hand-digitized and FWC drawing L was not available. Boundaries are perpendicular lines across the ICW; this polygon uses the adjoining GIS idle-zone edges, which the rule defines with the same distances. Not survey grade.",
+    "method": "Clipped the countywide 68D-24.008(1)(b) ICW polygon (FWC OBJECTID 144) to lon -80.112..-80.1 and lat 26.144316..26.163275. North edge = south edge of GIS OBJECTID 51 (Oakland Park idle zone, ±1,500 ft; bridge ≈ 26.167484); south edge = north edge of GIS OBJECTID 52 (Sunrise idle zone, 2,250 ft N of bridge ≈ 26.138135). Offsets at 1° lat ≈ 364000 ft. Not survey grade."
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -80.104997,
+       26.163275
+      ],
+      [
+       -80.105058,
+       26.162625
+      ],
+      [
+       -80.105088,
+       26.162297
+      ],
+      [
+       -80.105155,
+       26.161502
+      ],
+      [
+       -80.105257,
+       26.160363
+      ],
+      [
+       -80.105312,
+       26.159746
+      ],
+      [
+       -80.105341,
+       26.159421
+      ],
+      [
+       -80.105387,
+       26.158903
+      ],
+      [
+       -80.105415,
+       26.158747
+      ],
+      [
+       -80.105476,
+       26.15841
+      ],
+      [
+       -80.105594,
+       26.157731
+      ],
+      [
+       -80.105662,
+       26.157407
+      ],
+      [
+       -80.10578,
+       26.156732
+      ],
+      [
+       -80.105844,
+       26.1564
+      ],
+      [
+       -80.105964,
+       26.155717
+      ],
+      [
+       -80.106042,
+       26.155329
+      ],
+      [
+       -80.106198,
+       26.154468
+      ],
+      [
+       -80.106588,
+       26.153442
+      ],
+      [
+       -80.10668,
+       26.153245
+      ],
+      [
+       -80.106749,
+       26.153071
+      ],
+      [
+       -80.10702,
+       26.152687
+      ],
+      [
+       -80.107666,
+       26.151743
+      ],
+      [
+       -80.108743,
+       26.150168
+      ],
+      [
+       -80.108826,
+       26.150052
+      ],
+      [
+       -80.108728,
+       26.149658
+      ],
+      [
+       -80.108646,
+       26.149309
+      ],
+      [
+       -80.108441,
+       26.148492
+      ],
+      [
+       -80.10832,
+       26.148045
+      ],
+      [
+       -80.108264,
+       26.147805
+      ],
+      [
+       -80.108188,
+       26.147492
+      ],
+      [
+       -80.108138,
+       26.147314
+      ],
+      [
+       -80.108037,
+       26.146946
+      ],
+      [
+       -80.107931,
+       26.14652
+      ],
+      [
+       -80.107837,
+       26.146103
+      ],
+      [
+       -80.107748,
+       26.145745
+      ],
+      [
+       -80.107644,
+       26.145324
+      ],
+      [
+       -80.107636,
+       26.145044
+      ],
+      [
+       -80.107648,
+       26.144984
+      ],
+      [
+       -80.107672,
+       26.144951
+      ],
+      [
+       -80.107703,
+       26.144925
+      ],
+      [
+       -80.107724,
+       26.144913
+      ],
+      [
+       -80.107715,
+       26.144605
+      ],
+      [
+       -80.107628,
+       26.144572
+      ],
+      [
+       -80.107564,
+       26.144533
+      ],
+      [
+       -80.107504,
+       26.14448
+      ],
+      [
+       -80.107464,
+       26.144412
+      ],
+      [
+       -80.107436,
+       26.144316
+      ],
+      [
+       -80.106448,
+       26.144316
+      ],
+      [
+       -80.106448,
+       26.144316
+      ],
+      [
+       -80.106514,
+       26.14456
+      ],
+      [
+       -80.107123,
+       26.147021
+      ],
+      [
+       -80.107388,
+       26.148081
+      ],
+      [
+       -80.107491,
+       26.148492
+      ],
+      [
+       -80.107717,
+       26.149396
+      ],
+      [
+       -80.107814,
+       26.149781
+      ],
+      [
+       -80.107827,
+       26.14983
+      ],
+      [
+       -80.107829,
+       26.149869
+      ],
+      [
+       -80.10782,
+       26.149898
+      ],
+      [
+       -80.107812,
+       26.149926
+      ],
+      [
+       -80.107782,
+       26.149974
+      ],
+      [
+       -80.106218,
+       26.152279
+      ],
+      [
+       -80.105998,
+       26.15241
+      ],
+      [
+       -80.105635,
+       26.152612
+      ],
+      [
+       -80.105705,
+       26.15269
+      ],
+      [
+       -80.105709,
+       26.152802
+      ],
+      [
+       -80.105733,
+       26.152827
+      ],
+      [
+       -80.105725,
+       26.153029
+      ],
+      [
+       -80.105549,
+       26.153285
+      ],
+      [
+       -80.105462,
+       26.153398
+      ],
+      [
+       -80.105455,
+       26.153456
+      ],
+      [
+       -80.105345,
+       26.154016
+      ],
+      [
+       -80.105211,
+       26.154778
+      ],
+      [
+       -80.105129,
+       26.155197
+      ],
+      [
+       -80.104985,
+       26.155985
+      ],
+      [
+       -80.104882,
+       26.15655
+      ],
+      [
+       -80.104722,
+       26.15735
+      ],
+      [
+       -80.104649,
+       26.157816
+      ],
+      [
+       -80.104492,
+       26.158627
+      ],
+      [
+       -80.104435,
+       26.15914
+      ],
+      [
+       -80.104353,
+       26.159995
+      ],
+      [
+       -80.104329,
+       26.160319
+      ],
+      [
+       -80.104254,
+       26.161121
+      ],
+      [
+       -80.104238,
+       26.161444
+      ],
+      [
+       -80.104158,
+       26.162256
+      ],
+      [
+       -80.104125,
+       26.162571
+      ],
+      [
+       -80.104067,
+       26.163275
+      ],
+      [
+       -80.104067,
+       26.163275
+      ],
+      [
+       -80.104997,
+       26.163275
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}
