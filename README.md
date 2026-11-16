@@ -80,5 +80,5 @@ npm run serve        # sync-engine + python3 -m http.server 8080 -d public
 - The **Broward GeoHub** boating-facilities layer is a 2018 PDF, and `EEPD_Marine_Facility` returned 403. Neither is used.
 - **No official live ramp-capacity feed exists.** Lots fill on weekends and holidays.
 - **Palm Beach County 68D-24.017** (Camino Real Bridge to the county line: Slow Speed on weekends and holidays, 10 am–6 pm) is mentioned for context only. There is no polygon for it.
-- **Holidays**: both the actual date and the observed date count as holidays. The Sunrise Blvd Bridge South zone, 68D-24.008(1)(a)7.b., defines holidays by Rule 68D-24.002, F.A.C., which was not checked. The § 110.117 list is used as a cautious stand-in.
+- **Holidays**: 68D boating zones (Sunrise Blvd Bridge South, 68D-24.008(1)(a)7.b.) use Rule 68D-24.002(5), F.A.C. (text in `data/raw/fac_68D-24.002_definitions.txt`), which adds Columbus Day to the § 110.117, F.S. list. The 68C manatee weekend zone uses § 110.117. Both the actual and the observed date count.
 - Unknown zone codes fall back to Slow Speed with a warning. A zone never silently shows "no restriction".

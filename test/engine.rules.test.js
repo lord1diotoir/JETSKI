@@ -101,6 +101,20 @@ test('Sunrise Blvd Bridge South conditional', () => {
   assert.equal(kind(act(z, 2026, 11, 21, 2)), 'slow'); // all day
   assert.equal(act(z, 2026, 11, 17, 10), null); // Tue
   assert.equal(kind(act(z, 2026, 12, 25, 10)), 'slow'); // Christmas (Fri)
+  // Rule 68D-24.002(5) adds Columbus Day (2nd Mon Oct) for 68D zones.
+  assert.equal(kind(act(z, 2026, 10, 12, 10)), 'slow'); // Columbus Day 2026 (Mon)
+  assert.equal(act(z, 2026, 10, 13, 10), null); // Tue after
+});
+
+test('Holiday sets: 68D-24.002 adds Columbus Day; § 110.117 does not', async () => {
+  const H = await import('../src/engine/holidays.js');
+  assert.equal(H.isFloridaHoliday({ year: 2026, month: 10, day: 12 }), null);
+  assert.equal(H.isFloridaHoliday({ year: 2026, month: 10, day: 12 }, 'FAC_68D_24_002').name, 'Columbus Day');
+  assert.equal(H.isFloridaHoliday({ year: 2027, month: 10, day: 11 }, 'ANY').only, 'FAC_68D_24_002');
+  const fs = H.floridaHolidays(2026).map((h) => h.date);
+  const fac = H.floridaHolidays(2026, 'FAC_68D_24_002').map((h) => h.date);
+  assert.deepEqual(fac.filter((d) => !fs.includes(d)), ['2026-10-12']);
+  assert.throws(() => H.floridaHolidays(2026, 'NOPE'));
 });
 
 test('BRA 30 MPH countywide and digitized mappings', () => {

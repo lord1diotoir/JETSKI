@@ -280,11 +280,11 @@ function renderHeader(date) {
     node.title = `${name} manatee zone season dates from FWC GIS DATE1/DATE2 fields`;
   }
 
-  const hol = isFloridaHoliday({ year: parts.year, month: parts.month, day: parts.day });
+  const hol = isFloridaHoliday({ year: parts.year, month: parts.month, day: parts.day }, 'ANY');
   const hn = $('holiday');
   if (hol) {
     hn.hidden = false;
-    hn.textContent = `FL holiday: ${hol.name}${hol.observed ? ' (observed)' : ''}`;
+    hn.textContent = `FL holiday: ${hol.name}${hol.observed && !/observed/.test(hol.name) ? ' (observed)' : ''}${hol.only === 'FAC_68D_24_002' ? ' (68D boating zones only)' : ''}`;
   } else {
     hn.hidden = true;
   }
@@ -322,7 +322,7 @@ function presetDate(kind) {
   switch (kind) {
     case 'sat10': return upcoming((d) => d.dow === 6, 10);
     case 'sat20': return upcoming((d) => d.dow === 6, 20);
-    case 'wkday10': return upcoming((d) => d.dow >= 1 && d.dow <= 5 && !isFloridaHoliday(d), 10);
+    case 'wkday10': return upcoming((d) => d.dow >= 1 && d.dow <= 5 && !isFloridaHoliday(d, 'ANY'), 10);
     case 'apr15': {
       const y = (p.month > 4 || (p.month === 4 && p.day >= 15)) ? p.year + 1 : p.year;
       return at({ year: y, month: 4, day: 15 }, 10);
@@ -415,7 +415,7 @@ function evalHtml(pt, date, { title } = {}) {
   const contribs = [...res.contributions].sort((a, b) => (a.active ? 0 : 1) - (b.active ? 0 : 1));
   const pe = peAlert(pt);
   const parts = localParts(date, TZ);
-  const hol = isFloridaHoliday(parts);
+  const hol = isFloridaHoliday(parts, 'ANY');
 
   let html = `<div class="eval">`;
   if (title) html += `<div class="coord"><b>${esc(title)}</b></div>`;
@@ -582,7 +582,7 @@ const rampMarkers = [];
 
 function isWeekendOrHoliday(date) {
   const p = localParts(date, TZ);
-  return p.dow === 0 || p.dow === 6 || !!isFloridaHoliday(p);
+  return p.dow === 0 || p.dow === 6 || !!isFloridaHoliday(p, 'ANY');
 }
 
 function rampHtml(r) {
@@ -611,7 +611,7 @@ function rampHtml(r) {
   if (notes.length) h += `<ul class="notes">${notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`;
   h += `<div class="capacity">No official live capacity feed exists. Call ahead; lots fill on weekends and holidays.</div>`;
   if (isWeekendOrHoliday(date)) {
-    const hol = isFloridaHoliday(localParts(date, TZ));
+    const hol = isFloridaHoliday(localParts(date, TZ), 'ANY');
     h += `<div class="weekend">The selected time is a ${hol ? `holiday (${esc(hol.name)})` : 'weekend'}. Expect full lots; arrive early or have a backup ramp.</div>`;
   }
   h += `</div>`;

@@ -54,7 +54,7 @@ export function matchesWhen(when, parts) {
   }
   const days = when.days || 'all';
   if (days !== 'all') {
-    const weekendOrHoliday = parts.dow === 0 || parts.dow === 6 || !!isFloridaHoliday(parts);
+    const weekendOrHoliday = parts.dow === 0 || parts.dow === 6 || !!isFloridaHoliday(parts, when.holidays);
     if (days === 'weekend_holiday' && !weekendOrHoliday) return false;
     if (days === 'weekday_nonholiday' && weekendOrHoliday) return false;
   }
@@ -69,7 +69,7 @@ export function describeWhen(when) {
     const r = typeof when.season === 'string' ? parseDateRange(when.season) : when.season;
     bits.push(formatDateRange(r));
   }
-  if (when.days === 'weekend_holiday') bits.push('Sat, Sun & FL holidays');
+  if (when.days === 'weekend_holiday') bits.push(when.holidays === 'FAC_68D_24_002' ? 'Sat, Sun & holidays per 68D-24.002' : 'Sat, Sun & FL holidays');
   if (when.days === 'weekday_nonholiday') bits.push('weekdays (non-holiday)');
   if (when.time) bits.push(`${when.time.start}–${when.time.end}`);
   return bits.length ? bits.join(', ') : 'At all times';

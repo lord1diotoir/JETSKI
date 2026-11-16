@@ -120,7 +120,7 @@ export function restrictionFromText(text) {
 function scheduleWhen(sched, conditional, warnings) {
   const s = clean(sched).toLowerCase();
   if (!conditional && (!s || s.startsWith('at all times') || s.startsWith('except where superseded') || s === 'all year')) return {};
-  if (/saturday|sunday|weekend|holiday/.test(s)) return { days: 'weekend_holiday' };
+  if (/saturday|sunday|weekend|holiday/.test(s)) return { days: 'weekend_holiday', holidays: 'FAC_68D_24_002' }; // 68D zones: holidays per Rule 68D-24.002(5)
   if (!s || s.startsWith('at all times')) return {};
   warnings.push(`Unrecognized condition "${sched}" — treated as at all times; obey posted signs`);
   return {};
