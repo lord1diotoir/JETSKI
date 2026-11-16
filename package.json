@@ -7,7 +7,8 @@
     "build-data": "node scripts/build-data.mjs",
     "sync-engine": "rm -rf public/engine && cp -r src/engine public/engine",
     "serve": "npm run sync-engine && python3 -m http.server 8080 -d public",
-    "build-artifact": "node scripts/build-artifact.mjs"
+    "build-artifact": "node scripts/build-artifact.mjs",
+    "deploy-pages": "bash scripts/deploy-pages.sh"
   },
   "keywords": [],
   "author": "",
